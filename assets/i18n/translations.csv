@@ -1,0 +1,82 @@
+key,en,th
+app.title,List Keep,List Keep
+common.save,Save,บันทึก
+common.cancel,Cancel,ยกเลิก
+common.delete,Delete,ลบ
+common.edit,Edit,แก้ไข
+common.archive,Archive,เก็บถาวร
+common.unarchive,Unarchive,เลิกเก็บถาวร
+home.title,My Lists,ลิสต์ของฉัน
+home.create_list,Create list,สร้างลิสต์
+home.your_lists,Active lists,ลิสต์ที่ใช้งาน
+home.archived_lists,Archived,เก็บถาวร
+home.archived_empty,No archived lists yet.,ยังไม่มีลิสต์ที่เก็บถาวร
+home.hero_title,Structured lists for real life,ลิสต์ที่มีโครงสร้างสำหรับชีวิตจริง
+home.hero_description,Track expenses, collections, checklists, inventory, and more without the weight of a full database tool.,ติดตามค่าใช้จ่าย ของสะสม เช็กลิสต์ สต็อก และอื่น ๆ โดยไม่ต้องใช้เครื่องมือฐานข้อมูลที่ซับซ้อน
+home.empty_title,Start with one useful list,เริ่มต้นด้วยลิสต์ที่มีประโยชน์สักหนึ่งรายการ
+home.empty_description,Create a blank list or pick a template to start capturing structured records offline.,สร้างลิสต์เปล่าหรือเลือกเทมเพลตเพื่อเริ่มบันทึกข้อมูลแบบมีโครงสร้างแบบออฟไลน์
+home.list_card_fallback,Ready for records and fields.,พร้อมสำหรับเรคอร์ดและฟิลด์
+home.delete_confirm,Delete "{0}" and all of its fields and records?,ลบ "{0}" รวมทั้งฟิลด์และเรคอร์ดทั้งหมดหรือไม่
+home.list_deleted,List deleted.,ลบลิสต์แล้ว
+home.list_archived,List moved to archive.,ย้ายลิสต์ไปเก็บถาวรแล้ว
+list_editor.create_title,Create List,สร้างลิสต์
+list_editor.edit_title,Edit List,แก้ไขลิสต์
+list_editor.name,List name,ชื่อลิสต์
+list_editor.description,Description,คำอธิบาย
+list_editor.pick_icon,Pick an icon,เลือกไอคอน
+list_editor.pick_color,Pick a color,เลือกสี
+list_editor.template_title,Starter template,เทมเพลตเริ่มต้น
+list_editor.template_none,Blank list with one starter field,ลิสต์เปล่าพร้อมฟิลด์เริ่มต้นหนึ่งฟิลด์
+list_editor.choose_template,Choose template,เลือกเทมเพลต
+list_editor.saved,List saved.,บันทึกลิสต์แล้ว
+templates.title,Template Picker,เลือกเทมเพลต
+list_detail.title,List Detail,รายละเอียดลิสต์
+list_detail.no_description,No description yet.,ยังไม่มีคำอธิบาย
+list_detail.not_found,List not found.,ไม่พบลิสต์
+list_detail.pinned_only,Pinned only,เฉพาะที่ปักหมุด
+fields.title,Manage Fields,จัดการฟิลด์
+fields.add,Add field,เพิ่มฟิลด์
+fields.edit,Edit field,แก้ไขฟิลด์
+fields.name,Field name,ชื่อฟิลด์
+fields.type,Field type,ประเภทฟิลด์
+fields.options,Options,ตัวเลือก
+fields.options_hint,Separate options with commas.,คั่นตัวเลือกด้วยเครื่องหมายจุลภาค
+fields.required,Required field,ฟิลด์บังคับ
+fields.empty_title,Fields shape each record,ฟิลด์จะกำหนดรูปแบบของแต่ละเรคอร์ด
+fields.empty_description,Add a few fields so each record stays structured and searchable.,เพิ่มฟิลด์เพื่อให้แต่ละเรคอร์ดเป็นระเบียบและค้นหาได้
+fields.deleted,Field deleted.,ลบฟิลด์แล้ว
+records.add,Add record,เพิ่มเรคอร์ด
+records.create,Create Record,สร้างเรคอร์ด
+records.edit,Edit Record,แก้ไขเรคอร์ด
+records.pin,Pin this record,ปักหมุดเรคอร์ดนี้
+records.saved,Record saved.,บันทึกเรคอร์ดแล้ว
+records.deleted,Record deleted.,ลบเรคอร์ดแล้ว
+records.empty_title,No records yet,ยังไม่มีเรคอร์ด
+records.empty_description,Add the first record to bring this list to life.,เพิ่มเรคอร์ดแรกเพื่อให้ลิสต์นี้เริ่มใช้งานได้
+records.pick_date,Choose date,เลือกวันที่
+search.title,Search,ค้นหา
+search.hint,Search records across your lists...,ค้นหาเรคอร์ดในทุกลิสต์...
+search.empty_title,Search stays local,การค้นหาทำงานในเครื่อง
+search.empty_description,Type a keyword to search titles and saved values across your active lists.,พิมพ์คำค้นหาเพื่อค้นหาชื่อและค่าที่บันทึกไว้ในลิสต์ที่ใช้งาน
+search.no_results_title,No results,ไม่พบผลลัพธ์
+search.no_results_description,Try a shorter keyword or add more records first.,ลองใช้คำที่สั้นลงหรือเพิ่มเรคอร์ดก่อน
+settings.title,Settings,ตั้งค่า
+settings.language,Language,ภาษา
+settings.saved,Settings updated.,อัปเดตการตั้งค่าแล้ว
+sort.updated_newest,Updated newest,อัปเดตล่าสุดก่อน
+sort.updated_oldest,Updated oldest,อัปเดตเก่าสุดก่อน
+sort.alphabetical,Alphabetical,ตามตัวอักษร
+validation.required,Please fill in the required field.,กรุณากรอกฟิลด์ที่จำเป็น
+field_type.text,Text,ข้อความ
+field_type.multilineText,Long text,ข้อความหลายบรรทัด
+field_type.number,Number,ตัวเลข
+field_type.currency,Currency,สกุลเงิน
+field_type.checkbox,Checkbox,ช่องทำเครื่องหมาย
+field_type.date,Date,วันที่
+field_type.dateTime,Date & time,วันและเวลา
+field_type.singleSelect,Single select,เลือกหนึ่งค่า
+field_type.multiSelect,Multi select,เลือกหลายค่า
+field_type.rating,Rating,คะแนน
+field_type.url,URL,ลิงก์
+field_type.phone,Phone,โทรศัพท์
+field_type.email,Email,อีเมล

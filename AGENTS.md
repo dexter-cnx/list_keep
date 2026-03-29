@@ -1,53 +1,21 @@
-# AGENTS.md
+# List Keep Project Rules
 
-## Project Identity
-This repository is a Flutter application project that uses the shared toolkit in:
+This repository contains the product app for List Keep.
 
-`toolkit/codex-claude-mobile-toolkit/`
+Priority rules:
 
-Project-specific rules override toolkit defaults when they conflict.
+- keep the app offline-first and mobile-first
+- prefer pragmatic clean architecture over ceremony
+- keep routing centralized under `lib/app/router/`
+- keep persistence in repositories, not widgets
+- keep localization CSV-first with generated runtime JSON files
+- prefer simple Riverpod providers that are easy to trace
+- ship compile-friendly code before adding polish
 
-## Inheritance Order
-When working in this repo, use rules in this order:
-1. this file (`./AGENTS.md`)
-2. relevant project prompt under `./prompts/`
-3. toolkit `AGENTS.md`
-4. relevant toolkit skill under `toolkit/codex-claude-mobile-toolkit/skills/`
+Product guardrails:
 
-## Default Stack
-Use:
-- Flutter
-- Riverpod
-- go_router
-- Isar
-- easy_localization
-- CSV-first localization workflow
-- Material 3
-
-Do not replace these choices unless explicitly requested.
-
-## Localization
-Source of truth:
-- `assets/i18n/translations.csv`
-
-Generated runtime files:
-- `assets/i18n/generated/*.json`
-
-Workflow:
-1. edit CSV
-2. run generator
-3. app uses generated locale files
-
-## Architecture
-Use pragmatic simple clean architecture.
-Prefer readable modules over excessive abstraction.
-
-## Agent Behavior
-Before coding:
-- read this file
-- read the relevant prompt in `./prompts/`
-- read toolkit `AGENTS.md`
-- read the most relevant toolkit skill
-
-Keep code compile-friendly and avoid over-engineering.
-
+- no auth
+- no cloud sync
+- no premium logic
+- no backend assumptions
+- built-in templates should help users start fast

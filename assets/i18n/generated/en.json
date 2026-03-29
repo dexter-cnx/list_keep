@@ -1,0 +1,109 @@
+{
+  "app": {
+    "title": "List Keep"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "archive": "Archive",
+    "unarchive": "Unarchive"
+  },
+  "home": {
+    "title": "My Lists",
+    "create_list": "Create list",
+    "your_lists": "Active lists",
+    "archived_lists": "Archived",
+    "archived_empty": "No archived lists yet.",
+    "hero_title": "Structured lists for real life",
+    "hero_description": "Track expenses",
+    "empty_title": "Start with one useful list",
+    "empty_description": "Create a blank list or pick a template to start capturing structured records offline.",
+    "list_card_fallback": "Ready for records and fields.",
+    "delete_confirm": "Delete {0} and all of its fields and records?",
+    "list_deleted": "List deleted.",
+    "list_archived": "List moved to archive."
+  },
+  "list_editor": {
+    "create_title": "Create List",
+    "edit_title": "Edit List",
+    "name": "List name",
+    "description": "Description",
+    "pick_icon": "Pick an icon",
+    "pick_color": "Pick a color",
+    "template_title": "Starter template",
+    "template_none": "Blank list with one starter field",
+    "choose_template": "Choose template",
+    "saved": "List saved."
+  },
+  "templates": {
+    "title": "Template Picker"
+  },
+  "list_detail": {
+    "title": "List Detail",
+    "no_description": "No description yet.",
+    "not_found": "List not found.",
+    "pinned_only": "Pinned only"
+  },
+  "fields": {
+    "title": "Manage Fields",
+    "add": "Add field",
+    "edit": "Edit field",
+    "name": "Field name",
+    "type": "Field type",
+    "options": "Options",
+    "options_hint": "Separate options with commas.",
+    "required": "Required field",
+    "empty_title": "Fields shape each record",
+    "empty_description": "Add a few fields so each record stays structured and searchable.",
+    "deleted": "Field deleted."
+  },
+  "records": {
+    "add": "Add record",
+    "create": "Create Record",
+    "edit": "Edit Record",
+    "pin": "Pin this record",
+    "saved": "Record saved.",
+    "deleted": "Record deleted.",
+    "empty_title": "No records yet",
+    "empty_description": "Add the first record to bring this list to life.",
+    "pick_date": "Choose date"
+  },
+  "search": {
+    "title": "Search",
+    "hint": "Search records across your lists...",
+    "empty_title": "Search stays local",
+    "empty_description": "Type a keyword to search titles and saved values across your active lists.",
+    "no_results_title": "No results",
+    "no_results_description": "Try a shorter keyword or add more records first."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "saved": "Settings updated."
+  },
+  "sort": {
+    "updated_newest": "Updated newest",
+    "updated_oldest": "Updated oldest",
+    "alphabetical": "Alphabetical"
+  },
+  "validation": {
+    "required": "Please fill in the required field."
+  },
+  "field_type": {
+    "text": "Text",
+    "multilineText": "Long text",
+    "number": "Number",
+    "currency": "Currency",
+    "checkbox": "Checkbox",
+    "date": "Date",
+    "dateTime": "Date & time",
+    "singleSelect": "Single select",
+    "multiSelect": "Multi select",
+    "rating": "Rating",
+    "url": "URL",
+    "phone": "Phone",
+    "email": "Email"
+  }
+}
