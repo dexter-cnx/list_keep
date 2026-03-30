@@ -57,17 +57,21 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const AppSectionCard(
+          AppSectionCard(
+            accentColor: Theme.of(context).colorScheme.secondary,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'List Keep',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'Offline-first smart lists for structured personal records. The scaffold is ready for templates, search, filters, and later extensions.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                 ),
               ],
             ),

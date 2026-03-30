@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -34,61 +35,102 @@ GoRouter buildAppRouter(Ref ref) {
       GoRoute(
         path: AppRoute.home.path,
         name: AppRoute.home.name,
-        builder: (context, state) => const HomePage(),
+        pageBuilder: (context, state) => _page(const HomePage(), state),
       ),
       GoRoute(
         path: AppRoute.createList.path,
         name: AppRoute.createList.name,
-        builder: (context, state) => const CreateEditListPage(),
+        pageBuilder: (context, state) => _page(const CreateEditListPage(), state),
       ),
       GoRoute(
         path: AppRoute.editList.path,
         name: AppRoute.editList.name,
-        builder: (context, state) =>
-            CreateEditListPage(listId: _intParam(state, 'listId')),
+        pageBuilder: (context, state) => _page(
+          CreateEditListPage(listId: _intParam(state, 'listId')),
+          state,
+        ),
       ),
       GoRoute(
         path: AppRoute.templatePicker.path,
         name: AppRoute.templatePicker.name,
-        builder: (context, state) => const TemplatePickerPage(),
+        pageBuilder: (context, state) => _page(const TemplatePickerPage(), state),
       ),
       GoRoute(
         path: AppRoute.listDetail.path,
         name: AppRoute.listDetail.name,
-        builder: (context, state) =>
-            ListDetailPage(listId: _intParam(state, 'listId')),
+        pageBuilder: (context, state) => _page(
+          ListDetailPage(listId: _intParam(state, 'listId')),
+          state,
+        ),
       ),
       GoRoute(
         path: AppRoute.manageFields.path,
         name: AppRoute.manageFields.name,
-        builder: (context, state) =>
-            ManageFieldsPage(listId: _intParam(state, 'listId')),
+        pageBuilder: (context, state) => _page(
+          ManageFieldsPage(listId: _intParam(state, 'listId')),
+          state,
+        ),
       ),
       GoRoute(
         path: AppRoute.createRecord.path,
         name: AppRoute.createRecord.name,
-        builder: (context, state) =>
-            CreateEditRecordPage(listId: _intParam(state, 'listId')),
+        pageBuilder: (context, state) => _page(
+          CreateEditRecordPage(listId: _intParam(state, 'listId')),
+          state,
+        ),
       ),
       GoRoute(
         path: AppRoute.editRecord.path,
         name: AppRoute.editRecord.name,
-        builder: (context, state) => CreateEditRecordPage(
+        pageBuilder: (context, state) => _page(
+          CreateEditRecordPage(
           listId: _intParam(state, 'listId'),
           recordId: _intParam(state, 'recordId'),
+          ),
+          state,
         ),
       ),
       GoRoute(
         path: AppRoute.search.path,
         name: AppRoute.search.name,
-        builder: (context, state) => const SearchPage(),
+        pageBuilder: (context, state) => _page(const SearchPage(), state),
       ),
       GoRoute(
         path: AppRoute.settings.path,
         name: AppRoute.settings.name,
-        builder: (context, state) => const SettingsPage(),
+        pageBuilder: (context, state) => _page(const SettingsPage(), state),
       ),
     ],
+  );
+}
+
+Page<T> _page<T>(Widget child, GoRouterState state) {
+  if (WidgetsBinding.instance.platformDispatcher.accessibilityFeatures.disableAnimations) {
+    return NoTransitionPage<T>(key: state.pageKey, child: child);
+  }
+
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 240),
+    reverseTransitionDuration: const Duration(milliseconds: 180),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curve = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutQuart,
+      );
+
+      return FadeTransition(
+        opacity: curve,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.04, 0.02),
+            end: Offset.zero,
+          ).animate(curve),
+          child: child,
+        ),
+      );
+    },
   );
 }
 

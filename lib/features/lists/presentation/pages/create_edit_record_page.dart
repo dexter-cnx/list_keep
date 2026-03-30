@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/core/extensions/build_context_x.dart';
+import '../../../../app/core/widgets/app_section_card.dart';
 import '../../../../app/providers.dart';
 import '../../../../domain/entities/field_type.dart';
 import '../../../../domain/entities/list_field.dart';
@@ -39,45 +40,94 @@ class _CreateEditRecordPageState extends ConsumerState<CreateEditRecordPage> {
           widget.recordId == null ? 'records.create'.tr() : 'records.edit'.tr(),
         ),
       ),
-      body: fieldsAsync.when(
-        data: (fields) => recordAsync.when(
-          data: (record) {
-            if (!_seeded && record != null) {
-              for (final value in record.values) {
-                _draftValues[value.fieldId] = value.value;
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 220),
+        switchInCurve: Curves.easeOutQuart,
+        switchOutCurve: Curves.easeIn,
+        child: fieldsAsync.when(
+          data: (fields) => recordAsync.when(
+            data: (record) {
+              if (!_seeded && record != null) {
+                for (final value in record.values) {
+                  _draftValues[value.fieldId] = value.value;
+                }
+                _isPinned = record.isPinned;
+                _seeded = true;
               }
-              _isPinned = record.isPinned;
-              _seeded = true;
-            }
 
-            return ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                SwitchListTile(
-                  title: Text('records.pin'.tr()),
-                  value: _isPinned,
-                  onChanged: (value) => setState(() => _isPinned = value),
-                ),
-                const SizedBox(height: 12),
-                ...fields.map((field) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
-                    child: _FieldInput(
-                      field: field,
-                      initialValue: _draftValues[field.id ?? -1],
-                      onChanged: (value) =>
-                          _draftValues[field.id ?? -1] = value,
+              return ListView(
+                key: ValueKey('record-form-${widget.recordId ?? 'new'}'),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+                children: [
+                  AppSectionCard(
+                    accentColor: Theme.of(context).colorScheme.secondary,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text('records.pin'.tr()),
+                          value: _isPinned,
+                          onChanged: (value) =>
+                              setState(() => _isPinned = value),
+                        ),
+                      ],
                     ),
-                  );
-                }),
+                  ),
+                  const SizedBox(height: 16),
+                  AppSectionCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.recordId == null
+                              ? 'records.create'.tr()
+                              : 'records.edit'.tr(),
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 12),
+                        ...fields.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final field = entry.value;
+
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              bottom: index == fields.length - 1 ? 0 : 14,
+                            ),
+                            child: TweenAnimationBuilder<double>(
+                              duration: Duration(milliseconds: 220 + index * 35),
+                              curve: Curves.easeOutQuart,
+                              tween: Tween(begin: 0, end: 1),
+                              builder: (context, value, child) {
+                                return Opacity(
+                                  opacity: value,
+                                  child: Transform.translate(
+                                    offset: Offset(0, 12 * (1 - value)),
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: _FieldInput(
+                                field: field,
+                                initialValue: _draftValues[field.id ?? -1],
+                                onChanged: (value) =>
+                                    _draftValues[field.id ?? -1] = value,
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                ),
               ],
             );
-          },
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stackTrace) => Center(child: Text('$error')),
+          ),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) => Center(child: Text('$error')),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(child: Text('$error')),
       ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -180,6 +230,7 @@ class _FieldInputState extends State<_FieldInput> {
         );
       case FieldType.checkbox:
         return SwitchListTile(
+          contentPadding: EdgeInsets.zero,
           value: (_currentValue as bool?) ?? false,
           onChanged: (value) {
             setState(() => _currentValue = value);
@@ -317,11 +368,23 @@ class _DateFieldState extends State<_DateField> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return ListTile(
-      tileColor: Colors.white,
+      tileColor: colors.surfaceContainerLowest,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
-        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+        side: BorderSide(color: colors.outlineVariant),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: colors.primary.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Icon(Icons.calendar_today_outlined, color: colors.primary),
       ),
       title: Text(widget.label),
       subtitle: Text(
@@ -330,8 +393,11 @@ class _DateFieldState extends State<_DateField> {
             : widget.includeTime
             ? DateFormat.yMMMd().add_jm().format(_value!)
             : DateFormat.yMMMd().format(_value!),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
       ),
-      trailing: const Icon(Icons.calendar_today_outlined),
+      trailing: const Icon(Icons.chevron_right),
       onTap: () async {
         final date = await showDatePicker(
           context: context,

@@ -25,18 +25,29 @@ class AppEmptyState extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: colors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.35),
+          color: colors.outlineVariant.withValues(alpha: 0.55),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: colors.secondaryContainer,
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: colors.secondaryContainer,
+              borderRadius: BorderRadius.circular(18),
+            ),
             child: Icon(icon, color: colors.onSecondaryContainer),
           ),
           const SizedBox(height: 16),

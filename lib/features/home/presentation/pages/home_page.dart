@@ -20,6 +20,9 @@ class HomePage extends ConsumerWidget {
     final activeLists = ref.watch(activeListsProvider);
     final archivedLists = ref.watch(archivedListsProvider);
     final actions = ref.watch(listActionsProvider);
+    final activeCount = activeLists.valueOrNull?.length ?? 0;
+    final archivedCount =
+        archivedLists.valueOrNull?.where((list) => list.isArchived).length ?? 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +48,10 @@ class HomePage extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
         children: [
-          const _HeroCard(),
+          _HeroCard(
+            activeCount: activeCount,
+            archivedCount: archivedCount,
+          ),
           const SizedBox(height: 16),
           activeLists.when(
             data: (lists) => _ListSection(
@@ -79,6 +85,7 @@ class HomePage extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           AppSectionCard(
+            accentColor: Theme.of(context).colorScheme.secondary,
             child: archivedLists.when(
               data: (lists) {
                 final archived = lists
@@ -162,7 +169,13 @@ class HomePage extends ConsumerWidget {
 }
 
 class _HeroCard extends StatelessWidget {
-  const _HeroCard();
+  const _HeroCard({
+    required this.activeCount,
+    required this.archivedCount,
+  });
+
+  final int activeCount;
+  final int archivedCount;
 
   @override
   Widget build(BuildContext context) {
@@ -172,28 +185,140 @@ class _HeroCard extends StatelessWidget {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
-        gradient: LinearGradient(
-          colors: [scheme.primary, scheme.secondary],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        color: scheme.surfaceContainerLowest,
+        border: Border.all(
+          color: scheme.primary.withValues(alpha: 0.18),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: scheme.primary.withValues(alpha: 0.05),
+            blurRadius: 22,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: -6,
+            top: -10,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: scheme.secondary.withValues(alpha: 0.12),
+              ),
+            ),
+          ),
+          Positioned(
+            left: -24,
+            bottom: -32,
+            child: Container(
+              width: 140,
+              height: 140,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: scheme.primary.withValues(alpha: 0.08),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _HeroPill(label: 'home.your_lists'.tr()),
+              const SizedBox(height: 14),
+              Text(
+                'home.hero_title'.tr(),
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'home.hero_description'.tr(),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  _StatChip(
+                    value: '$activeCount',
+                    label: 'home.your_lists'.tr(),
+                  ),
+                  _StatChip(
+                    value: '$archivedCount',
+                    label: 'home.archived_lists'.tr(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroPill extends StatelessWidget {
+  const _HeroPill({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: BoxDecoration(
+        color: scheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: scheme.onSecondaryContainer,
+              fontWeight: FontWeight.w700,
+            ),
+      ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({required this.value, required this.label});
+
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.45)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'home.hero_title'.tr(),
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: scheme.onPrimary,
-              fontWeight: FontWeight.w700,
-            ),
+            value,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 2),
           Text(
-            'home.hero_description'.tr(),
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: scheme.onPrimary.withValues(alpha: 0.92),
-            ),
+            label,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
           ),
         ],
       ),

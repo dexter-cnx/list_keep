@@ -23,34 +23,54 @@ class AppListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = Color(list.colorValue);
     final colors = Theme.of(context).colorScheme;
+    final description = list.description.isEmpty
+        ? 'home.list_card_fallback'.tr()
+        : list.description;
 
     return Card(
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
-        borderRadius: BorderRadius.circular(24),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(18),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: 26,
-                backgroundColor: color.withValues(alpha: 0.14),
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(18),
+                ),
                 child: Icon(_iconForKey(list.iconKey), color: color),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      list.name,
-                      style: Theme.of(context).textTheme.titleMedium,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            list.name,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                        if (list.isArchived)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: _Badge(
+                              label: 'common.archive'.tr(),
+                              color: colors.surfaceContainerHigh,
+                            ),
+                          ),
+                      ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
-                      list.description.isEmpty
-                          ? 'home.list_card_fallback'.tr()
-                          : list.description,
+                      description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -60,7 +80,9 @@ class AppListCard extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(width: 6),
               PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
                 onSelected: (value) {
                   if (value == 'edit') {
                     onEdit();
@@ -112,5 +134,29 @@ IconData _iconForKey(String iconKey) {
       return Icons.favorite_outline;
     default:
       return Icons.checklist_rounded;
+  }
+}
+
+class _Badge extends StatelessWidget {
+  const _Badge({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+      ),
+    );
   }
 }
