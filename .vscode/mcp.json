@@ -1,0 +1,32 @@
+{
+	"servers": {
+		"stitch": {
+			"command": "npx",
+			"args": [
+				"@_davideast/stitch-mcp",
+				"proxy"
+			],
+			"env": {
+				"STITCH_API_KEY": "${input:stitch-api-key}"
+			},
+			"type": "stdio"
+		},
+		"my-mcp-server-60b7a5f2": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"Args:",
+				"@_davideast/stitch-mcp",
+				"proxy"
+			]
+		}
+	},
+	"inputs": [
+		{
+			"id": "stitch-api-key",
+			"type": "promptString",
+			"description": "Stitch API Key",
+			"password": true
+		}
+	]
+}

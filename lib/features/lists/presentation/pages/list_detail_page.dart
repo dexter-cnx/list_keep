@@ -8,6 +8,7 @@ import '../../../../app/core/widgets/app_empty_state.dart';
 import '../../../../app/core/widgets/app_section_card.dart';
 import '../../../../app/providers.dart';
 import '../../../../app/router/app_router.dart';
+import '../../../../domain/entities/app_list.dart';
 import '../../../../domain/entities/list_field.dart';
 import '../../../../domain/entities/list_record.dart';
 import '../../../../domain/entities/record_sort_option.dart';
@@ -95,44 +96,35 @@ class ListDetailPage extends ConsumerWidget {
             }
 
             final listColor = Color(list.colorValue);
+            final records = recordsAsync.valueOrNull ?? const <ListRecord>[];
+            final fields = fieldsAsync.valueOrNull ?? const <ListField>[];
+            final pinnedCount = records
+                .where((record) => record.isPinned)
+                .length;
+            final visibleCount = records.length;
 
             return ListView(
               key: ValueKey('list-detail-${list.id}'),
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 104),
               children: [
+                _HeaderCard(
+                  list: list,
+                  listColor: listColor,
+                  recordCount: visibleCount,
+                  fieldCount: fields.length,
+                  pinnedCount: pinnedCount,
+                ),
+                const SizedBox(height: 16),
                 AppSectionCard(
                   accentColor: listColor,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 56,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              color: listColor.withValues(alpha: 0.14),
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                            child: Icon(_iconForKey(list.iconKey), color: listColor),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Text(
-                              list.description.isEmpty
-                                  ? 'list_detail.no_description'.tr()
-                                  : list.description,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                  ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'list_detail.filters'.tr(),
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -142,8 +134,9 @@ class ListDetailPage extends ConsumerWidget {
                             selected: pinnedOnly,
                             onSelected: (value) {
                               ref
-                                  .read(pinnedOnlyProvider(listId).notifier)
-                                  .state = value;
+                                      .read(pinnedOnlyProvider(listId).notifier)
+                                      .state =
+                                  value;
                             },
                           ),
                           DropdownButton<RecordSortOption>(
@@ -165,8 +158,11 @@ class ListDetailPage extends ConsumerWidget {
                             onChanged: (value) {
                               if (value != null) {
                                 ref
-                                    .read(recordSortProvider(listId).notifier)
-                                    .state = value;
+                                        .read(
+                                          recordSortProvider(listId).notifier,
+                                        )
+                                        .state =
+                                    value;
                               }
                             },
                           ),
@@ -198,6 +194,7 @@ class ListDetailPage extends ConsumerWidget {
                         );
                       }
 
+                      final listFields = fields;
                       return Column(
                         children: records.asMap().entries.map((entry) {
                           final index = entry.key;
@@ -206,7 +203,9 @@ class ListDetailPage extends ConsumerWidget {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: TweenAnimationBuilder<double>(
-                              duration: Duration(milliseconds: 220 + index * 35),
+                              duration: Duration(
+                                milliseconds: 220 + index * 35,
+                              ),
                               curve: Curves.easeOutQuart,
                               tween: Tween(begin: 0, end: 1),
                               builder: (context, value, child) {
@@ -221,7 +220,7 @@ class ListDetailPage extends ConsumerWidget {
                               child: _RecordCard(
                                 accentColor: listColor,
                                 record: record,
-                                fields: fields,
+                                fields: listFields,
                                 onTap: () => context.pushNamed(
                                   AppRoute.editRecord.name,
                                   pathParameters: {
@@ -253,7 +252,8 @@ class ListDetailPage extends ConsumerWidget {
                         const Center(child: CircularProgressIndicator()),
                     error: (error, stackTrace) => Text('$error'),
                   ),
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (error, stackTrace) => Text('$error'),
                 ),
               ],
@@ -262,6 +262,135 @@ class ListDetailPage extends ConsumerWidget {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) => Center(child: Text('$error')),
         ),
+      ),
+    );
+  }
+}
+
+class _HeaderCard extends StatelessWidget {
+  const _HeaderCard({
+    required this.list,
+    required this.listColor,
+    required this.recordCount,
+    required this.fieldCount,
+    required this.pinnedCount,
+  });
+
+  final AppList list;
+  final Color listColor;
+  final int recordCount;
+  final int fieldCount;
+  final int pinnedCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final description = list.description.isEmpty
+        ? 'list_detail.no_description'.tr()
+        : list.description;
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        color: colors.surfaceContainerLowest,
+        border: Border.all(
+          color: listColor.withValues(alpha: isDark ? 0.26 : 0.18),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: listColor.withValues(alpha: isDark ? 0.08 : 0.05),
+            blurRadius: 24,
+            offset: const Offset(0, 14),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: -12,
+            top: -18,
+            child: Container(
+              width: 130,
+              height: 130,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: listColor.withValues(alpha: 0.08),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: listColor.withValues(alpha: isDark ? 0.16 : 0.12),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Icon(_iconForKey(list.iconKey), color: listColor),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          list.name,
+                          style: Theme.of(context).textTheme.displaySmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          description,
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                color: colors.onSurfaceVariant,
+                                height: 1.45,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  const _StatChipLabel(label: 'Records'),
+                  _StatChip(value: '$recordCount'),
+                  const _StatChipLabel(label: 'Fields'),
+                  _StatChip(value: '$fieldCount'),
+                  const _StatChipLabel(label: 'Pinned'),
+                  _StatChip(value: '$pinnedCount'),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _StatusPill(
+                    label: list.isArchived ? 'Archived' : 'Active',
+                    color: list.isArchived
+                        ? colors.surfaceContainerHigh
+                        : colors.secondaryContainer,
+                  ),
+                  _StatusPill(
+                    label: 'Offline first',
+                    color: colors.surfaceContainerHigh,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -286,55 +415,220 @@ class _RecordCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final valuesByField = {
       for (final value in record.values) value.fieldId: value.value,
     };
 
-    return AppSectionCard(
-      accentColor: accentColor,
-      padding: const EdgeInsets.all(18),
+    return Material(
+      color: colors.surfaceContainerLowest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: accentColor.withValues(alpha: 0.12)),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(28),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    record.title,
-                    style: Theme.of(context).textTheme.titleMedium,
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                record.title,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                            if (record.isPinned)
+                              _StatusPill(
+                                label: 'records.pin'.tr(),
+                                color: colors.secondaryContainer,
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'records.updated'.tr(),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: colors.onSurfaceVariant),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: onPin,
-                  icon: Icon(
-                    record.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: onPin,
+                    icon: Icon(
+                      record.isPinned
+                          ? Icons.push_pin
+                          : Icons.push_pin_outlined,
+                    ),
                   ),
+                  IconButton(
+                    onPressed: onDelete,
+                    icon: const Icon(Icons.delete_outline),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (fields.isEmpty)
+                Text(
+                  'list_detail.no_description'.tr(),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                )
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: fields
+                      .take(4)
+                      .where((field) {
+                        final value = valuesByField[field.id];
+                        return value != null && '$value'.trim().isNotEmpty;
+                      })
+                      .map((field) {
+                        final value = valuesByField[field.id];
+                        return _FieldPill(
+                          label: field.name,
+                          value: formatRecordValue(field.type, value),
+                        );
+                      })
+                      .toList(),
                 ),
-                IconButton(
-                  onPressed: onDelete,
-                  icon: const Icon(Icons.delete_outline),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            ...fields.take(3).map((field) {
-              final value = valuesByField[field.id];
-              if (value == null || '$value'.trim().isEmpty) {
-                return const SizedBox.shrink();
-              }
-
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Text(
-                  '${field.name}: ${formatRecordValue(field.type, value)}',
-                ),
-              );
-            }),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({required this.value});
+
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: colors.outlineVariant.withValues(alpha: 0.45),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatChipLabel extends StatelessWidget {
+  const _StatChipLabel({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(
+          context,
+        ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(
+          context,
+        ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+class _FieldPill extends StatelessWidget {
+  const _FieldPill({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: Theme.of(
+              context,
+            ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            value,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+        ],
       ),
     );
   }

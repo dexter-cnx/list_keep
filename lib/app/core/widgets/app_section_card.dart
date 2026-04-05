@@ -16,16 +16,31 @@ class AppSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final accent = accentColor ?? colors.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surface = isDark
+        ? colors.surfaceContainerLowest.withValues(alpha: 0.9)
+        : colors.surfaceContainerLowest;
 
     return Card(
-      child: Container(
+      color: surface,
+      child: DecoratedBox(
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
           border: Border(
             top: BorderSide(
-              color: accent.withValues(alpha: 0.22),
-              width: 1.1,
+              color: accent.withValues(alpha: isDark ? 0.42 : 0.22),
+              width: 1.2,
             ),
           ),
+          boxShadow: isDark
+              ? []
+              : [
+                  BoxShadow(
+                    color: colors.primary.withValues(alpha: 0.05),
+                    blurRadius: 22,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
         ),
         child: Padding(padding: padding, child: child),
       ),

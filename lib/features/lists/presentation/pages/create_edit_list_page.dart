@@ -76,14 +76,44 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
       ),
       body: listAsync.when(
         data: (_) => ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
           children: [
+            AppSectionCard(
+              accentColor: Theme.of(context).colorScheme.primary,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isEditing
+                        ? 'list_editor.edit_title'.tr()
+                        : 'list_editor.create_title'.tr(),
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    isEditing
+                        ? 'Refine the list structure, icon, and tone.'
+                        : 'Start with a focused list, then shape it with a template or your own structure.',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      height: 1.45,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             AppSectionCard(
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      'Basic details',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 12),
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
@@ -106,40 +136,72 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'list_editor.pick_icon'.tr(),
+                      'Appearance',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Pick an icon and a color that will help the list feel instantly recognizable.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        height: 1.45,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'list_editor.pick_icon'.tr(),
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                    const SizedBox(height: 10),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: _icons.map((iconKey) {
                         final selected = _iconKey == iconKey;
                         return ChoiceChip(
-                          label: Icon(_icon(iconKey)),
+                          label: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: Icon(_icon(iconKey), size: 18),
+                          ),
                           selected: selected,
                           onSelected: (_) => setState(() => _iconKey = iconKey),
                         );
                       }).toList(),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 18),
                     Text(
                       'list_editor.pick_color'.tr(),
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme.of(context).textTheme.labelLarge,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     Wrap(
-                      spacing: 10,
+                      spacing: 12,
+                      runSpacing: 12,
                       children: _colors.map((value) {
                         final selected = _colorValue == value;
-                        return GestureDetector(
-                          onTap: () => setState(() => _colorValue = value),
-                          child: CircleAvatar(
-                            radius: selected ? 24 : 20,
-                            backgroundColor: Color(value),
-                            child: selected
-                                ? const Icon(Icons.check, color: Colors.white)
-                                : null,
+                        final color = Color(value);
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 180),
+                          curve: Curves.easeOutQuart,
+                          width: selected ? 48 : 42,
+                          height: selected ? 48 : 42,
+                          child: GestureDetector(
+                            onTap: () => setState(() => _colorValue = value),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: color,
+                                border: Border.all(
+                                  color: selected
+                                      ? Theme.of(context).colorScheme.onSurface
+                                      : Colors.transparent,
+                                  width: 2,
+                                ),
+                              ),
+                              child: selected
+                                  ? const Icon(Icons.check, color: Colors.white)
+                                  : null,
+                            ),
                           ),
                         );
                       }).toList(),
@@ -151,28 +213,31 @@ class _CreateEditListPageState extends ConsumerState<CreateEditListPage> {
             if (!isEditing) ...[
               const SizedBox(height: 16),
               AppSectionCard(
-                child: Row(
+                accentColor: Theme.of(context).colorScheme.tertiary,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'list_editor.template_title'.tr(),
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _selectedTemplate?.name ??
-                                'list_editor.template_none'.tr(),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
+                    Text(
+                      'list_editor.template_title'.tr(),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _selectedTemplate?.name ??
+                          'list_editor.template_none'.tr(),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        height: 1.45,
                       ),
                     ),
-                    OutlinedButton(
-                      onPressed: _pickTemplate,
-                      child: Text('list_editor.choose_template'.tr()),
+                    const SizedBox(height: 14),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: OutlinedButton.icon(
+                        onPressed: _pickTemplate,
+                        icon: const Icon(Icons.auto_awesome_outlined),
+                        label: Text('list_editor.choose_template'.tr()),
+                      ),
                     ),
                   ],
                 ),

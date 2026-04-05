@@ -13,12 +13,34 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(settingsProvider);
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(title: Text('settings.title'.tr())),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
+          AppSectionCard(
+            accentColor: colors.secondary,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'settings.title'.tr(),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Offline-first, on-device, and ready to adapt to your preferred language.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                    height: 1.45,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
           AppSectionCard(
             child: settingsAsync.when(
               data: (settings) => Column(
@@ -34,11 +56,12 @@ class SettingsPage extends ConsumerWidget {
                     runSpacing: 8,
                     children: AppLocalization.supportedLocales.map((locale) {
                       final code = locale.languageCode;
+                      final selected = settings.localeCode == code;
                       return ChoiceChip(
                         label: Text(AppLocalization.localeNames[code] ?? code),
-                        selected: settings.localeCode == code,
-                        onSelected: (selected) async {
-                          if (!selected) return;
+                        selected: selected,
+                        onSelected: (value) async {
+                          if (!value) return;
                           await ref
                               .read(settingsRepositoryProvider)
                               .saveLocale(code);
@@ -58,7 +81,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           AppSectionCard(
-            accentColor: Theme.of(context).colorScheme.secondary,
+            accentColor: colors.tertiary,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -68,10 +91,11 @@ class SettingsPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Offline-first smart lists for structured personal records. The scaffold is ready for templates, search, filters, and later extensions.',
+                  'Smart lists for structured personal records, built to stay local, fast, and easy to extend.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    color: colors.onSurfaceVariant,
+                    height: 1.45,
+                  ),
                 ),
               ],
             ),

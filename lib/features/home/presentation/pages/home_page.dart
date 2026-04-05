@@ -46,13 +46,15 @@ class HomePage extends ConsumerWidget {
         label: Text('home.create_list'.tr()),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 104),
         children: [
           _HeroCard(
             activeCount: activeCount,
             archivedCount: archivedCount,
+            onCreateList: () => context.pushNamed(AppRoute.createList.name),
+            onSearch: () => context.pushNamed(AppRoute.search.name),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           activeLists.when(
             data: (lists) => _ListSection(
               title: 'home.your_lists'.tr(),
@@ -172,28 +174,33 @@ class _HeroCard extends StatelessWidget {
   const _HeroCard({
     required this.activeCount,
     required this.archivedCount,
+    required this.onCreateList,
+    required this.onSearch,
   });
 
   final int activeCount;
   final int archivedCount;
+  final VoidCallback onCreateList;
+  final VoidCallback onSearch;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
         color: scheme.surfaceContainerLowest,
         border: Border.all(
-          color: scheme.primary.withValues(alpha: 0.18),
+          color: scheme.primary.withValues(alpha: isDark ? 0.26 : 0.18),
         ),
         boxShadow: [
           BoxShadow(
-            color: scheme.primary.withValues(alpha: 0.05),
-            blurRadius: 22,
-            offset: const Offset(0, 12),
+            color: scheme.primary.withValues(alpha: isDark ? 0.08 : 0.05),
+            blurRadius: 24,
+            offset: const Offset(0, 14),
           ),
         ],
       ),
@@ -226,18 +233,44 @@ class _HeroCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _HeroPill(label: 'home.your_lists'.tr()),
-              const SizedBox(height: 14),
+              Row(
+                children: [
+                  _HeroPill(label: 'home.your_lists'.tr()),
+                  const Spacer(),
+                  _HeroPill(
+                    label: 'Offline-first',
+                    accentColor: scheme.secondaryContainer,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               Text(
                 'home.hero_title'.tr(),
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: Theme.of(context).textTheme.displaySmall,
               ),
               const SizedBox(height: 10),
               Text(
                 'home.hero_description'.tr(),
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: scheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 18),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  FilledButton.icon(
+                    onPressed: onCreateList,
+                    icon: const Icon(Icons.add),
+                    label: Text('home.create_list'.tr()),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: onSearch,
+                    icon: const Icon(Icons.search),
+                    label: Text('search.title'.tr()),
+                  ),
+                ],
               ),
               const SizedBox(height: 18),
               Wrap(
@@ -263,9 +296,10 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _HeroPill extends StatelessWidget {
-  const _HeroPill({required this.label});
+  const _HeroPill({required this.label, this.accentColor});
 
   final String label;
+  final Color? accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -273,15 +307,15 @@ class _HeroPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        color: scheme.secondaryContainer,
+        color: accentColor ?? scheme.secondaryContainer,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: scheme.onSecondaryContainer,
-              fontWeight: FontWeight.w700,
-            ),
+          color: scheme.onSecondaryContainer,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -302,23 +336,25 @@ class _StatChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: scheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.45)),
+        border: Border.all(
+          color: scheme.outlineVariant.withValues(alpha: 0.45),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 2),
           Text(
             label,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],
       ),

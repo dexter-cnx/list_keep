@@ -57,8 +57,53 @@ class _CreateEditRecordPageState extends ConsumerState<CreateEditRecordPage> {
 
               return ListView(
                 key: ValueKey('record-form-${widget.recordId ?? 'new'}'),
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 104),
                 children: [
+                  AppSectionCard(
+                    accentColor: Theme.of(context).colorScheme.primary,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.recordId == null
+                              ? 'Create record'
+                              : 'Edit record',
+                          style: Theme.of(context).textTheme.displaySmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Capture the values for this list in one place. Fields stay local and easy to edit later.',
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                                height: 1.45,
+                              ),
+                        ),
+                        const SizedBox(height: 16),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _StatusPill(
+                              label: _isPinned ? 'Pinned' : 'Not pinned',
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.secondaryContainer,
+                            ),
+                            _StatusPill(
+                              label: '${fields.length} fields',
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHigh,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   AppSectionCard(
                     accentColor: Theme.of(context).colorScheme.secondary,
                     child: Column(
@@ -71,19 +116,40 @@ class _CreateEditRecordPageState extends ConsumerState<CreateEditRecordPage> {
                           onChanged: (value) =>
                               setState(() => _isPinned = value),
                         ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Pinned records stay near the top when browsing.',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                                height: 1.45,
+                              ),
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 16),
                   AppSectionCard(
+                    accentColor: Theme.of(context).colorScheme.tertiary,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.recordId == null
-                              ? 'records.create'.tr()
-                              : 'records.edit'.tr(),
+                          'Fields',
                           style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Fill in each value below. The layout adapts to the field type automatically.',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                                height: 1.45,
+                              ),
                         ),
                         const SizedBox(height: 12),
                         ...fields.asMap().entries.map((entry) {
@@ -95,7 +161,9 @@ class _CreateEditRecordPageState extends ConsumerState<CreateEditRecordPage> {
                               bottom: index == fields.length - 1 ? 0 : 14,
                             ),
                             child: TweenAnimationBuilder<double>(
-                              duration: Duration(milliseconds: 220 + index * 35),
+                              duration: Duration(
+                                milliseconds: 220 + index * 35,
+                              ),
                               curve: Curves.easeOutQuart,
                               tween: Tween(begin: 0, end: 1),
                               builder: (context, value, child) {
@@ -107,20 +175,25 @@ class _CreateEditRecordPageState extends ConsumerState<CreateEditRecordPage> {
                                   ),
                                 );
                               },
-                              child: _FieldInput(
-                                field: field,
-                                initialValue: _draftValues[field.id ?? -1],
-                                onChanged: (value) =>
-                                    _draftValues[field.id ?? -1] = value,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                child: _FieldInput(
+                                  field: field,
+                                  initialValue: _draftValues[field.id ?? -1],
+                                  onChanged: (value) =>
+                                      _draftValues[field.id ?? -1] = value,
+                                ),
                               ),
                             ),
                           );
                         }),
                       ],
                     ),
-                ),
-              ],
-            );
+                  ),
+                ],
+              );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (error, stackTrace) => Center(child: Text('$error')),
@@ -338,6 +411,30 @@ class _FieldInputState extends State<_FieldInput> {
   }
 }
 
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(
+          context,
+        ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
 class _DateField extends StatefulWidget {
   const _DateField({
     required this.label,
@@ -370,63 +467,84 @@ class _DateFieldState extends State<_DateField> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return ListTile(
-      tileColor: colors.surfaceContainerLowest,
+    return Material(
+      color: colors.surfaceContainerLow,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         side: BorderSide(color: colors.outlineVariant),
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: colors.primary.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Icon(Icons.calendar_today_outlined, color: colors.primary),
-      ),
-      title: Text(widget.label),
-      subtitle: Text(
-        _value == null
-            ? 'records.pick_date'.tr()
-            : widget.includeTime
-            ? DateFormat.yMMMd().add_jm().format(_value!)
-            : DateFormat.yMMMd().format(_value!),
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-      ),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: () async {
-        final date = await showDatePicker(
-          context: context,
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2100),
-          initialDate: _value ?? DateTime.now(),
-        );
-        if (date == null || !context.mounted) return;
-
-        DateTime next = date;
-        if (widget.includeTime) {
-          final time = await showTimePicker(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () async {
+          final date = await showDatePicker(
             context: context,
-            initialTime: TimeOfDay.fromDateTime(_value ?? DateTime.now()),
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2100),
+            initialDate: _value ?? DateTime.now(),
           );
-          if (time != null) {
-            next = DateTime(
-              date.year,
-              date.month,
-              date.day,
-              time.hour,
-              time.minute,
-            );
-          }
-        }
+          if (date == null || !context.mounted) return;
 
-        setState(() => _value = next);
-        widget.onChanged(next.toIso8601String());
-      },
+          DateTime next = date;
+          if (widget.includeTime) {
+            final time = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.fromDateTime(_value ?? DateTime.now()),
+            );
+            if (time != null) {
+              next = DateTime(
+                date.year,
+                date.month,
+                date.day,
+                time.hour,
+                time.minute,
+              );
+            }
+          }
+
+          setState(() => _value = next);
+          widget.onChanged(next.toIso8601String());
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: colors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  Icons.calendar_today_outlined,
+                  color: colors.primary,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.label),
+                    const SizedBox(height: 4),
+                    Text(
+                      _value == null
+                          ? 'records.pick_date'.tr()
+                          : widget.includeTime
+                          ? DateFormat.yMMMd().add_jm().format(_value!)
+                          : DateFormat.yMMMd().format(_value!),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
